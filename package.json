@@ -1,0 +1,19 @@
+{
+  "name": "fsagenerator",
+  "version": "1.0.0",
+  "description": "Generates a table description of an fsa using a graphical diagram based interface",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lan2u/FsaGenerator.git"
+  },
+  "author": "Paul Lancaster",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lan2u/FsaGenerator/issues"
+  },
+  "homepage": "https://github.com/Lan2u/FsaGenerator#readme"
+}
