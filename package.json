@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Lan2u/FsaGenerator/issues"
   },
-  "homepage": "https://github.com/Lan2u/FsaGenerator#readme"
+  "homepage": "https://github.com/Lan2u/FsaGenerator#readme",
+  "dependencies": {
+    "electron": "^1.7.10"
+  }
 }
