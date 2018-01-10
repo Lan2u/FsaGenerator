@@ -7,17 +7,26 @@
     <script src="node_modules\feather-icons\dist\feather.js"></script>
   </head>
   <body>
-    <div id=toolDiv>
-      <button class="toolButton" id="stateToolButton"><i data-feather="circle"></i></button>
-      <button class="toolButton" id="transitionToolButton">Create Transitions</button>
-      <button class="toolButton" id="selectToolButton">Select Tool</button>
-    </div>
-    <div id=drawDiv>
-      <canvas id="drawCanvas"></canvas>
-    </div>
-    <script src="index.js"></script>
-    <script>
+  <table id="containerTable">
+    <tr>
+    <th>
+      <div class="divContainer" id=toolDiv>
+        <button class="toolButton" id="stateToolButton"><i data-feather="circle"></i></button>
+        <button class="toolButton" id="transitionToolButton">Create Transitions</button>
+        <button class="toolButton" id="selectToolButton">Select Tool</button>
+      </div>
+    </th>
+    <th>
+      <canvas id="drawCanvas" width="600", height="600"></canvas>
+    </th>
+    </tr>
+  </table>
+
+
+  <script src="index.js"></script>
+  <script>
+      // Replace the icon feather references above eg. the data-feather="..."
       feather.replace();
-    </script>
+  </script>
   </body>
 </html>

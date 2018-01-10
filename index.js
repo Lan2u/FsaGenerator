@@ -146,6 +146,8 @@ drawCanvas.addEventListener('click', function(event){
   console.log("drawCanvas single click");
   if (currentTool == STATE_TOOL_STR){
     var rect = drawCanvas.getBoundingClientRect();
+    console.log("Canvas bounding rect: ");
+    console.log(rect);
     var x = event.clientX - rect.left;
     var y = event.clientY - rect.top;
     var surroundRegion = 2; // the multiplier applied to the radius of the nearest state to decide if the point is near to the state.

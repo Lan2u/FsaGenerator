@@ -1,17 +1,18 @@
 #drawCanvas {
   border:1px solid #000000;
+  background-color: lightblue;
+}
+
+#containerTable {
+  height: 100%;
+  width: 100%;
 }
 
 .toolDiv {
+  width:200px;
+  height:100%;
   background-color: LightGray;
-}
-
-.drawDiv {
-
-}
-
-.drawCanvas {
-
+  overflow:auto;
 }
 
 .toolButton {
@@ -19,4 +20,5 @@
   height: 50px;
   width: 50px;
   background-color: cyan;
+  left:0%;
 }
