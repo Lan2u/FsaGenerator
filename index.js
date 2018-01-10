@@ -1,14 +1,16 @@
 const electron = require('electron')
 
-const stateToolButton = document.getElementById('stateToolButton')
-const transitionToolButton = document.getElementById('transitionToolButton')
-const selectToolButton = document.getElementById('selectToolButton')
+const stateToolButton = document.getElementById('stateToolButton');
+const transitionToolButton = document.getElementById('transitionToolButton');
+const selectToolButton = document.getElementById('selectToolButton');
+const editToolButton = document.getElementById('editToolButton');
 
 const drawCanvas = document.getElementById('drawCanvas')
 
 const STATE_TOOL_STR = "stateTool";
 const TRANSITION_TOOL_STR = "transitionTool";
 const SELECT_TOOL_STR = "selectTool";
+const EDIT_TOOL_STR = "editTool";
 
 const DEFAULT_STATE_RADIUS = 10;
 
@@ -219,3 +221,8 @@ selectToolButton.addEventListener('click', function(){
   console.log("Select tool selected")
   currentTool = SELECT_TOOL_STR;
 });
+
+editToolButton.addEventListener('click', function(){
+  console.log("Edit tool selected");
+  currentTool = EDIT_TOOL_STR;
+})
