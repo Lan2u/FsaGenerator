@@ -180,38 +180,22 @@ function getDistance(x1, y1, x2, y2) {
 // Single click on draw canvas.
 drawCanvas.addEventListener('click', function (event) {
   console.log("drawCanvas single click");
+
   if (currentTool == STATE_TOOL_STR) {
-    var rect = drawCanvas.getBoundingClientRect();
-    console.log("Canvas bounding rect: ");
-    console.log(rect);
-    var x = event.clientX - rect.left;
-    var y = event.clientY - rect.top;
-    var surroundRegion = 2; // the multiplier applied to the radius of the nearest state to decide if the point is near to the state.
-
-    var nearestState = getNearestState(x, y, surroundRegion);
-
-    if (!(nearestState.directlyWithin || nearestState.surroundWithin)) { // Canvas clicked rather than a state
-      var state = createState(autoGenStateId(), x, y, false, false);
-      currentStates.push(state);
-      console.log("Pushed new state");
-      console.log(state);
-      redrawCanvas();
-    } else { // State clicked
-
-    }
+    stateToolDrawCanvasLeftClick(event);
+  } else if (currentTool == EDIT_TOOL_STR){
+    editToolDrawCanvasLeftClick(event);
+  } else if (currentTool == TRANSITION_TOOL_STR) {
+    transitionToolDrawCanvasLeftClick(event);
+  } else if (currentTool == SELECT_TOOL_STR) {
+    selectToolDrawCanvasLeftClick(event);
+  } else {
+    console.log("Unrecognised tool left click on drawCavnas!");
   }
 });
 
-// Double click on draw canvas.
-drawCanvas.addEventListener('dblclick', function (event) {
-  console.log("drawCanvas double click");
-});
-
-// Right click on draw canvas
-drawCanvas.addEventListener('contextmenu', function (event) {
-  console.log("drawCanvas right click");
-  if (currentTool == STATE_TOOL_STR) {
-    var rect = drawCanvas.getBoundingClientRect();
+function stateToolDrawCanvasRightClick(event) {
+  var rect = drawCanvas.getBoundingClientRect();
     var x = event.clientX - rect.left;
     var y = event.clientY - rect.top;
     var surroundRegion = 2; // the multiplier applied to the radius of the nearest state to decide if the point is near to the state.
@@ -235,8 +219,72 @@ drawCanvas.addEventListener('contextmenu', function (event) {
       console.log(state);
       redrawCanvas();
     }
-  }
+}
 
+function stateToolDrawCanvasLeftClick(event) {
+  var rect = drawCanvas.getBoundingClientRect();
+    console.log("Canvas bounding rect: ");
+    console.log(rect);
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
+    var surroundRegion = 2; // the multiplier applied to the radius of the nearest state to decide if the point is near to the state.
+
+    var nearestState = getNearestState(x, y, surroundRegion);
+
+    if (!(nearestState.directlyWithin || nearestState.surroundWithin)) { // Canvas clicked rather than a state
+      var state = createState(autoGenStateId(), x, y, false, false);
+      currentStates.push(state);
+      console.log("Pushed new state");
+      console.log(state);
+      redrawCanvas();
+    } else { // State clicked
+
+    }
+}
+
+function editToolDrawCanvasRightClick(event) {
+
+}
+
+function stateToolDrawCanvasLeftClick(event) {
+  
+}
+
+function transitionToolDrawCanvasRightClick(event) {
+
+}
+
+function stateToolDrawCanvasLeftClick(event) {
+  
+}
+
+function selectToolDrawCanvasRightClick(event) {
+
+}
+
+function stateToolDrawCanvasLeftClick(event) {
+  
+}
+
+// Double click on draw canvas.
+drawCanvas.addEventListener('dblclick', function (event) {
+  console.log("drawCanvas double click");
+});
+
+// Right click on draw canvas
+drawCanvas.addEventListener('contextmenu', function (event) {
+  console.log("drawCanvas right click");
+  if (currentTool == STATE_TOOL_STR) {
+    stateToolDrawCanvasRightClick(event);
+  } else if (currentTool == EDIT_TOOL_STR){
+    editToolDrawCanvasRightClick(event);
+  } else if (currentTool == TRANSITION_TOOL_STR) {
+    transitionToolDrawCanvasRightClick(event);
+  } else if (currentTool == SELECT_TOOL_STR) {
+    selectToolDrawCanvasRightClick(event);
+  } else {
+    console.log("Unrecognised tool right click on drawCavnas!");
+  }
   event.preventDefault();
   return false;
 }, false);
