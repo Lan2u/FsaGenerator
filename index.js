@@ -24,33 +24,48 @@ var currentTool = "stateTool";
 var currentStates = [];
 var currentTransitions = [];
 
-function createState(stateId, x, y, isAccepting, isInitial){
+var lastStateId = 0 // The last state ID issued. 
+
+function createState(stateId, x, y, isAccepting, isInitial) {
   return {
     stateId: stateId,
     x: x,
     y: y,
     radius: DEFAULT_STATE_RADIUS,
     accepting: isAccepting,
-    initial: isInitial
+    initial: isInitial,
+
+    /* Indicates if the state has changed in a way that requires it be redrawn. 
+     Initially true then set false after each drawing unless something sets it true again. */
+    needsRedrawing: true,
   }
 }
 
-function createTransition(initialStateId, inputStr, finalStateId) {
+/*
+  Creates a new transition. Takes the indexes of the states within the currentStates array. The reason for this is that javascript doesn't
+  have pointers and so this acts like a pointer in that either states can be updated in the currentStates array and the change will be reflected
+  in the transition. 
+  This is in contrast to either: 
+    - Passing in the states as objects which therefore wouldn't be updated if the state was later changed and so there would be inconsistencies
+    which means that this solution wouldn't work unless the states were made immutable which overly restricts the programs usefulness.
+    - Passing in the unique state id's. This would mean an average case O(logn) time complexity search each time which means if it has to be done
+    to draw every transition is O(klogn) where k is the number of transitions and n is the number of states. 
+*/
+function createTransition(initalStateArrayIndex, inputStr, finalStateArrayIndex) {
   return {
-    initialState: initialStateId,
-    finalState: finalStateId,
+    initialStateIndex: initialStateArrayIndex,
+    finalStateIndex: finalStateArrayIndex,
     input: inputStr
   }
 }
 
-var lastStateId = 0
-
-function autoGenStateId(){
+/* Autogenerate a unique stateId */
+function autoGenStateId() {
   lastStateId++;
   return lastStateId;
 }
 
-function redrawCanvas(){
+function redrawCanvas() {
   var ctx = drawCanvas.getContext("2d");
   // Clear the canvas. May be more efficient to only clear certain areas.
   ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
@@ -58,25 +73,25 @@ function redrawCanvas(){
   drawStates(ctx);
 }
 
-function drawTransitions(ctx){
-  for (var i = 0; i < currentTransitions.length; i++){
-    // TODO
+function drawTransitions(ctx) {
+  for (var i = 0; i < currentTransitions.length; i++) {
+    
   }
 }
 
-function drawStates(ctx){
-  for (var i = 0; i < currentStates.length; i++){
-      drawState(ctx, currentStates[i]);
+function drawStates(ctx) {
+  for (var i = 0; i < currentStates.length; i++) {
+    drawState(ctx, currentStates[i]);
   }
 }
 
-function drawState(ctx, state){
+function drawState(ctx, state) {
   ctx.beginPath();
   ctx.arc(state.x,
-  state.y,
-  state.radius,
-   0, 2*Math.PI); //Draw a circle
-  if (state.accepting){
+    state.y,
+    state.radius,
+    0, 2 * Math.PI); //Draw a circle
+  if (state.accepting) {
     ctx.fillStyle = ACCEPTING_FILL_STYLE;
   } else {
     ctx.fillStyle = STANDARD_FILL_STYLE;
@@ -85,7 +100,7 @@ function drawState(ctx, state){
   ctx.stroke();
   ctx.font = STATE_TEXT_FONT;
   ctx.fillStyle = STATE_TEXT_FILL_STYLE;
-  ctx.fillText(state.stateId, state.x - state.radius, state.y + (state.radius/2));
+  ctx.fillText(state.stateId, state.x - state.radius, state.y + (state.radius / 2));
 }
 
 /* Returns the nearest state with extra information about if the position in
@@ -107,21 +122,21 @@ function drawState(ctx, state){
    surroundRegion: the multiplier applied to the radius of the nearest state to
                    decide if the point is near to the state.
 */
-function getNearestState(x, y, surroundingRegion){
+function getNearestState(x, y, surroundingRegion) {
   var closestIndex = -1;
   var directlyWithin = false;
   var surroundWithin = false;
   var closestRadius;
 
-  for (var i = 0; i < currentStates.length; i++){
+  for (var i = 0; i < currentStates.length; i++) {
     var dist = getDistance(x, y, currentStates[i].x, currentStates[i].y);
-    if (closestIndex == -1 || dist < closestRadius){
+    if (closestIndex == -1 || dist < closestRadius) {
       closestRadius = dist;
       closestIndex = i;
-      if (dist <= currentStates[i].radius * surroundingRegion){
+      if (dist <= currentStates[i].radius * surroundingRegion) {
         // Position within the surroundings inclusive.
         surroundWithin = true;
-        if (dist <= currentStates[i].radius){
+        if (dist <= currentStates[i].radius) {
           // Position directly within the nearest state inclusive.
           directlyWithin = true;
         } else {
@@ -133,7 +148,7 @@ function getNearestState(x, y, surroundingRegion){
     }
   }
 
-  if (closestIndex == -1){ // Impossible to be true unless there were no states
+  if (closestIndex == -1) { // Impossible to be true unless there were no states
     return {
       state: null,
       directlyWithin: directlyWithin,
@@ -149,14 +164,14 @@ function getNearestState(x, y, surroundingRegion){
 }
 
 // Return the distance between the 2 coordinates (x1, y1) and (x2, y2)
-function getDistance(x1, y1, x2, y2){
-  return Math.sqrt(Math.pow((x1 - x2),2) + Math.pow((y1 - y2), 2));
+function getDistance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
 }
 
 // Single click on draw canvas.
-drawCanvas.addEventListener('click', function(event){
+drawCanvas.addEventListener('click', function (event) {
   console.log("drawCanvas single click");
-  if (currentTool == STATE_TOOL_STR){
+  if (currentTool == STATE_TOOL_STR) {
     var rect = drawCanvas.getBoundingClientRect();
     console.log("Canvas bounding rect: ");
     console.log(rect);
@@ -166,7 +181,7 @@ drawCanvas.addEventListener('click', function(event){
 
     var nearestState = getNearestState(x, y, surroundRegion);
 
-    if (!(nearestState.directlyWithin || nearestState.surroundWithin)){ // Canvas clicked rather than a state
+    if (!(nearestState.directlyWithin || nearestState.surroundWithin)) { // Canvas clicked rather than a state
       var state = createState(autoGenStateId(), x, y, false, false);
       currentStates.push(state);
       console.log("Pushed new state");
@@ -179,14 +194,14 @@ drawCanvas.addEventListener('click', function(event){
 });
 
 // Double click on draw canvas.
-drawCanvas.addEventListener('dblclick', function(event){
+drawCanvas.addEventListener('dblclick', function (event) {
   console.log("drawCanvas double click");
 });
 
 // Right click on draw canvas
-drawCanvas.addEventListener('contextmenu', function(event){
+drawCanvas.addEventListener('contextmenu', function (event) {
   console.log("drawCanvas right click");
-  if (currentTool == STATE_TOOL_STR){
+  if (currentTool == STATE_TOOL_STR) {
     var rect = drawCanvas.getBoundingClientRect();
     var x = event.clientX - rect.left;
     var y = event.clientY - rect.top;
@@ -194,7 +209,7 @@ drawCanvas.addEventListener('contextmenu', function(event){
 
     var nearestState = getNearestState(x, y, surroundRegion);
     console.log(nearestState);
-    if (nearestState.directlyWithin){
+    if (nearestState.directlyWithin) {
       // A state was clicked directly
       var stateClicked = nearestState.state;
 
@@ -217,22 +232,22 @@ drawCanvas.addEventListener('contextmenu', function(event){
   return false;
 }, false);
 
-stateToolButton.addEventListener('click', function(){
+stateToolButton.addEventListener('click', function () {
   console.log("State tool selected")
   currentTool = STATE_TOOL_STR;
 });
 
-transitionToolButton.addEventListener('click', function(){
+transitionToolButton.addEventListener('click', function () {
   console.log("Transition tool selected")
   currentTool = TRANSITION_TOOL_STR;
 });
 
-selectToolButton.addEventListener('click', function(){
+selectToolButton.addEventListener('click', function () {
   console.log("Select tool selected")
   currentTool = SELECT_TOOL_STR;
 });
 
-editToolButton.addEventListener('click', function(){
+editToolButton.addEventListener('click', function () {
   console.log("Edit tool selected");
   currentTool = EDIT_TOOL_STR;
 })
