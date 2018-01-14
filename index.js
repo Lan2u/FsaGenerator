@@ -16,6 +16,9 @@ const DEFAULT_STATE_RADIUS = 10;
 
 const ACCEPTING_FILL_STYLE = 'green';
 const STANDARD_FILL_STYLE = 'white';
+const STATE_TEXT_FILL_STYLE = 'black';
+
+const STATE_TEXT_FONT = "12px Arial";
 
 var currentTool = "stateTool";
 var currentStates = [];
@@ -75,6 +78,9 @@ function drawStates(ctx){
       }
       ctx.fill();
       ctx.stroke();
+      ctx.font = STATE_TEXT_FONT;
+      ctx.fillStyle = STATE_TEXT_FILL_STYLE;
+      ctx.fillText(currentStates[i].stateId, currentStates[i].x - currentStates[i].radius, currentStates[i].y + (currentStates[i].radius/2));
   }
 }
 
@@ -84,7 +90,7 @@ function drawStates(ctx){
    If 2 states have same distance then the one returned is the one that appears
    first (at the lowest index) of the currentStates array.
    Returned object structure:
-/* {
+  {
     state: The nearestState to the given x,y. Null if there is no nearest state.
     directlyWithin: true if x,y directly in the state otherwise false
     surroundWithin: true if x,y is near to the state (within 1.5 * radius from
