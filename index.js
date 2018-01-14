@@ -38,11 +38,14 @@ function createState(stateId, x, y, isAccepting, isInitial) {
     /* Indicates if the state has changed in a way that requires it be redrawn. 
      Initially true then set false after each drawing unless something sets it true again. */
     needsRedrawing: true,
+
+    /* Stores all transitions out of this state */
+    transitions: []
   }
 }
 
 /*
-  Creates a new transition. Takes the indexes of the states within the currentStates array. The reason for this is that javascript doesn't
+  Creates a new transition. Takes the index of the state within the currentStates array. The reason for this is that javascript doesn't
   have pointers and so this acts like a pointer in that either states can be updated in the currentStates array and the change will be reflected
   in the transition. 
   This is in contrast to either: 
@@ -51,9 +54,8 @@ function createState(stateId, x, y, isAccepting, isInitial) {
     - Passing in the unique state id's. This would mean an average case O(logn) time complexity search each time which means if it has to be done
     to draw every transition is O(klogn) where k is the number of transitions and n is the number of states. 
 */
-function createTransition(initalStateArrayIndex, inputStr, finalStateArrayIndex) {
+function createTransition(inputStr, finalStateArrayIndex) {
   return {
-    initialStateIndex: initialStateArrayIndex,
     finalStateIndex: finalStateArrayIndex,
     input: inputStr
   }
@@ -69,14 +71,7 @@ function redrawCanvas() {
   var ctx = drawCanvas.getContext("2d");
   // Clear the canvas. May be more efficient to only clear certain areas.
   ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-  drawTransitions(ctx);
   drawStates(ctx);
-}
-
-function drawTransitions(ctx) {
-  for (var i = 0; i < currentTransitions.length; i++) {
-    
-  }
 }
 
 function drawStates(ctx) {
@@ -101,6 +96,20 @@ function drawState(ctx, state) {
   ctx.font = STATE_TEXT_FONT;
   ctx.fillStyle = STATE_TEXT_FILL_STYLE;
   ctx.fillText(state.stateId, state.x - state.radius, state.y + (state.radius / 2));
+
+  drawTransitions(ctx, state);
+}
+
+/* Draws all the transitions from the given initial state */
+function drawTransitions(ctx, initialState) {
+  for(var i = 0; i < initialState.transitions.length; i++){
+    ctx.beginPath();
+    ctx.moveTo(initialState.x, initialState.y);
+
+    var finalState = currentStates[initialState.transitions[i].finalStateIndex];
+    ctx.lineTo(finalState.x, finalState.y);
+  }
+  ctx.stroke();
 }
 
 /* Returns the nearest state with extra information about if the position in
