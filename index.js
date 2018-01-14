@@ -118,14 +118,14 @@ function drawTransitions(ctx, initialState) {
   ctx.stroke();
 }
 
-/* Returns the nearest state with extra information about if the position in
+/* Returns the nearest state's currentStates array index with extra information about if the position in
    within the surrounding area or directly on the state.
    The checks are inclusive so a point on the edge is counted.
    If 2 states have same distance then the one returned is the one that appears
    first (at the lowest index) of the currentStates array.
    Returned object structure:
   {
-    state: The nearestState to the given x,y. Null if there is no nearest state.
+    stateIndex: The nearestState's index in the currentStates array to the given x,y. Null if there is no nearest state.
     directlyWithin: true if x,y directly in the state otherwise false
     surroundWithin: true if x,y is near to the state (within 1.5 * radius from
                     the center) otherwise false.
@@ -165,13 +165,13 @@ function getNearestState(x, y, surroundingRegion) {
 
   if (closestIndex == -1) { // Impossible to be true unless there were no states
     return {
-      state: null,
+      stateIndex: null,
       directlyWithin: directlyWithin,
       surroundWithin: surroundWithin
     }
   } else {
     return {
-      state: currentStates[closestIndex],
+      stateIndex: closestIndex,
       directlyWithin: directlyWithin,
       surroundWithin: surroundWithin
     }
@@ -218,7 +218,7 @@ function stateToolDrawCanvasRightClick(event) {
     console.log(nearestState);
     if (nearestState.directlyWithin) {
       // A state was clicked directly
-      var stateClicked = nearestState.state;
+      var stateClicked = currentStates[nearestState.stateIndex];
 
     } else if (nearestState.surroundWithin) {
       // The surrounding around a state was clicked (half the radius beyond the radius)
@@ -288,14 +288,14 @@ function createCreatingTransition(initialStateIndex, initialX, initialY){
 function stateToolDrawCanvasLeftClick(event) {
   var nearestState = getNearestState(event.x, event.y, 1);
   if (nearestState.directlyWithin){ // The left click was directly on a state
-    if (currentlyCreatingTransition == null) {
-      currentlyCreatingTransition = createCreatingTransition(nearestState.state, nearestState.state.x, nearestState.state.y);
-      // Start creating a transition
-    } else {
-      // Finish creating a transition
-      var inputStr; // TODO make an enter input UI
+    if (currentlyCreatingTransition == null) { // Start creating a transition
+      currentlyCreatingTransition = createCreatingTransition(currentStates[nearestState.stateIndex], currentStates[nearestState.stateIndex].x, currentStates[nearestState.stateIndex].y);
+      
+    } else { // Finish creating a transition
+      
+      var inputStr = "UN-IMPLEMENTED"; // TODO make an enter input UI
 
-      var finalStateId = findStateIndexById(nearestState.state.stateId);
+      var finalStateId = findStateIndexById(currentStates[nearestState.stateIndex].stateId);
       var transition = createTransition(inputStr, )
       currentlyCreatingTransition == null;
     }
