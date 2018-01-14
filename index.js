@@ -23,6 +23,7 @@ const STATE_TEXT_FONT = "12px Arial";
 var currentTool = "stateTool";
 var currentStates = [];
 var currentTransitions = [];
+var currentlyCreatingTransition = null;
 
 var lastStateId = 0 // The last state ID issued. 
 
@@ -72,6 +73,11 @@ function redrawCanvas() {
   // Clear the canvas. May be more efficient to only clear certain areas.
   ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
   drawStates(ctx);
+  drawCreatingTransition(ctx);
+}
+
+function drawCreatingTransition(ctx) {
+
 }
 
 function drawStates(ctx) {
@@ -177,6 +183,14 @@ function getDistance(x1, y1, x2, y2) {
   return Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2));
 }
 
+drawCanvas.addEventListener('mousemove', function(event){
+  if (currentlyCreatingTransition != null){
+    // Update the position of the end of the currently being created transition.
+    currentlyCreatingTransition.x = event.clientX;
+    currentlyCreatingTransition.y = event.clientY;
+  }
+});
+
 // Single click on draw canvas.
 drawCanvas.addEventListener('click', function (event) {
   console.log("drawCanvas single click");
@@ -262,8 +276,30 @@ function selectToolDrawCanvasRightClick(event) {
 
 }
 
+// Creates an object representing a transition that is being created
+function createCreatingTransition(initialStateIndex, initialX, initialY){
+  return {
+    initialStateIndex: initialStateIndex,
+    currentX: initialX,
+    currentY: initialY
+  }
+}
+
 function stateToolDrawCanvasLeftClick(event) {
-  
+  var nearestState = getNearestState(event.x, event.y, 1);
+  if (nearestState.directlyWithin){ // The left click was directly on a state
+    if (currentlyCreatingTransition == null) {
+      currentlyCreatingTransition = createCreatingTransition(nearestState.state, nearestState.state.x, nearestState.state.y);
+      // Start creating a transition
+    } else {
+      // Finish creating a transition
+      var inputStr; // TODO make an enter input UI
+
+      var finalStateId = findStateIndexById(nearestState.state.stateId);
+      var transition = createTransition(inputStr, )
+      currentlyCreatingTransition == null;
+    }
+  }
 }
 
 // Double click on draw canvas.
