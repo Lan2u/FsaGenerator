@@ -66,22 +66,26 @@ function drawTransitions(ctx){
 
 function drawStates(ctx){
   for (var i = 0; i < currentStates.length; i++){
-      ctx.beginPath();
-      ctx.arc(currentStates[i].x,
-       currentStates[i].y,
-       currentStates[i].radius,
-       0, 2*Math.PI); //Draw a circle
-      if (currentStates[i].accepting){
-        ctx.fillStyle = ACCEPTING_FILL_STYLE;
-      } else {
-        ctx.fillStyle = STANDARD_FILL_STYLE;
-      }
-      ctx.fill();
-      ctx.stroke();
-      ctx.font = STATE_TEXT_FONT;
-      ctx.fillStyle = STATE_TEXT_FILL_STYLE;
-      ctx.fillText(currentStates[i].stateId, currentStates[i].x - currentStates[i].radius, currentStates[i].y + (currentStates[i].radius/2));
+      drawState(ctx, currentStates[i]);
   }
+}
+
+function drawState(ctx, state){
+  ctx.beginPath();
+  ctx.arc(state.x,
+  state.y,
+  state.radius,
+   0, 2*Math.PI); //Draw a circle
+  if (state.accepting){
+    ctx.fillStyle = ACCEPTING_FILL_STYLE;
+  } else {
+    ctx.fillStyle = STANDARD_FILL_STYLE;
+  }
+  ctx.fill();
+  ctx.stroke();
+  ctx.font = STATE_TEXT_FONT;
+  ctx.fillStyle = STATE_TEXT_FILL_STYLE;
+  ctx.fillText(state.stateId, state.x - state.radius, state.y + (state.radius/2));
 }
 
 /* Returns the nearest state with extra information about if the position in
